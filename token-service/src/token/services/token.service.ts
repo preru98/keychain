@@ -16,23 +16,41 @@ export class TokenService {
         private readonly redisService: RedisService,
     ) {}
 
-    async fetchToken(userId: string, accessKeyId: string): Promise<Token>{
+    async fetchToken(userId: string, accessKeyId: string): Promise<Token[]>{
+        if (!userId || !accessKeyId) {
+            throw new BadRequestException('Invalid request');
+        }
+        const accessKey = await this.accessKeyRepository.findOne({where: { globalAccessId: accessKeyId }});
+        
+        if (!accessKey) {
+            throw new NotFoundException('Access key not found');
+        }
+
+        if (userId != accessKey.owner){
+            throw new BadRequestException('Invalid access key');
+        }
+
+        if (accessKey.disabled) {
+            throw new BadRequestException('Access key disabled');
+        }
+
+        if (accessKey.expiresAt < new Date()) {
+            throw new BadRequestException('Access key expired');
+        }
+
         const redisKey = getRateLimitKey(accessKeyId);
 
-        // Update the access key rate limit
         const count = await this.redisService.incr(redisKey)
         this.redisService.expire(redisKey, 60);
-
-        const accessKey = await this.accessKeyRepository.findOne({where: { id: accessKeyId }});
 
         if (count > accessKey.requestRateLimit) {
             throw new BadRequestException('Rate limit exceeded');
         }
 
-        const token = await this.tokenRepository.findOne({where: { owner: userId }}); // Change this as well once auth module returns user
-        if (!token) {
-            throw new NotFoundException('Token not found');
+        const tokens = await this.tokenRepository.find({where: { owner: userId }}); // Change this as well once auth module returns user
+        if (!tokens.length) {
+            throw new NotFoundException('Token(s) not found');
         }
-        return token;
+        return tokens;
     }
 }

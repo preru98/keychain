@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: prerna
+      POSTGRES_PASSWORD: postgres-password
+      POSTGRES_DB: prerna
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres/custom-postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/custom-pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+
+  redis:
+    image: redis:6
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  token-service:
+    build: ./token-service
+    ports:
+      - "3001:3001"
+
+  keychain-service:
+    build: ./keychain-service
+    ports:
+      - "3000:3000"

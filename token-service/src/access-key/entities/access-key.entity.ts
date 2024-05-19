@@ -6,11 +6,14 @@ const DEFAULT_REQUEST_RATE_LIMIT = 10;
 
 @Entity()
 export class AccessKey {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
 
-  @Generated('uuid')
-  key: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+
+  @IsUUID()
+  @Column()
+  globalAccessId: string;     // PK of access key from keychain-service
+
 
   @Column({ default: DEFAULT_REQUEST_RATE_LIMIT})
   requestRateLimit: number;
@@ -20,10 +23,6 @@ export class AccessKey {
 
   @Column({default: false})
   disabled: boolean;
-
-  @IsUUID()
-  @Column()
-  createdBy: string ;  //UUID  User who created the key (admin)
 
   @IsUUID()
   @Column()

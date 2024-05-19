@@ -1,5 +1,5 @@
 import { Optional } from '@nestjs/common';
-import { IsNumber, IsUUID } from 'class-validator';
+import { IsBoolean, IsDate, IsNumber, IsUUID } from 'class-validator';
 
 export class CreateAccessKeyDTO {
     @IsNumber()
@@ -10,5 +10,11 @@ export class CreateAccessKeyDTO {
     readonly owner: string;
 
     @IsUUID()
-    readonly accessKeyId: string;
+    readonly id: string;
+
+    @IsDate()
+    readonly expiresAt: Date;
+
+    @IsBoolean()
+    readonly disabled: boolean;
 }

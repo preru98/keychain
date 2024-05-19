@@ -5,6 +5,7 @@ import { AccessKey } from '../entities/access-key.entity';
 import { CreateAccessKeyDTO } from '../dto/create-access-key.dto';
 import { DisableAccessKeyDTO } from '../dto/disable-access-key.dto';
 import { EnableAccessKeyDTO } from '../dto/enable-access-key.dto';
+import { UpdateAccessKeyDTO } from '../dto/update-access-key.dto';
 
 
 
@@ -18,40 +19,33 @@ export class AccessKeyService {
     // Create access key
     async createAccessKey(createAccessKeyDto: CreateAccessKeyDTO): Promise<AccessKey>{
         const accessKey = new AccessKey();
-        accessKey.owner = createAccessKeyDto.owner;
+        accessKey.owner = createAccessKeyDto.owner["id"]; 
         accessKey.requestRateLimit = createAccessKeyDto.requestRateLimit;
-
+        accessKey.expiresAt = createAccessKeyDto.expiresAt;
+        accessKey.disabled = createAccessKeyDto.disabled;
+        accessKey.globalAccessId = createAccessKeyDto.id;
+        
         return this.accessKeyRepository.save(accessKey);
     }
 
-    // async updateAccessKey(accessKeyID: string, updateAccessKeyDto: UpdateAccessKeyDTO): Promise<AccessKey>{
-    //     const user = await this.userRepository.findOne({where: { id: updateAccessKeyDto.requesterId}});
-    //     if (!user) {
-    //         throw new NotFoundException('Account not found');
-    //     }
+    async updateAccessKey(updateAccessKeyDto: UpdateAccessKeyDTO): Promise<AccessKey>{
+        const accessKey = await this.accessKeyRepository.findOne({where: { globalAccessId: updateAccessKeyDto.id}});
+        if (!accessKey) {
+            throw new NotFoundException('Access key not found');
+        }
+        if (updateAccessKeyDto.expiresAt)  
+            accessKey.expiresAt = updateAccessKeyDto.expiresAt;
+        if (updateAccessKeyDto.requestRateLimit)
+            accessKey.requestRateLimit = updateAccessKeyDto.requestRateLimit;
 
-    //     if (user.role !== AccountRole.ADMIN) {
-    //         throw new BadRequestException('Account is not an admin');
-    //     }
-
-    //     const accessKey = await this.accessKeyRepository.findOne({where: { id: accessKeyID}});
-    //     if (!accessKey) {
-    //         throw new NotFoundException('Access key not found');
-    //     } 
-        
-    //     accessKey.expiresAt = updateAccessKeyDto.expiresAt;
-    //     accessKey.requestRateLimit = updateAccessKeyDto.requestRateLimit;
-
-    //     await this.redisService.publish('access-key-updated', JSON.stringify({accessKey}));
-
-    //     return this.accessKeyRepository.save(accessKey);
-    // }
+        return this.accessKeyRepository.save(accessKey);
+    }
 
     async disableAccessKey(disableAccessKeyDTO: DisableAccessKeyDTO){
         const accessKey = await this.accessKeyRepository.findOne({
                 where: 
                     { 
-                        id: disableAccessKeyDTO.accessKeyID
+                        globalAccessId: disableAccessKeyDTO.accessKeyID
                     }
             });
         if (!accessKey) {
@@ -75,7 +69,7 @@ export class AccessKeyService {
         const accessKey = await this.accessKeyRepository.findOne({
                 where: 
                     { 
-                        id: enableAccessKeyDTO.accessKeyID
+                        globalAccessId: enableAccessKeyDTO.accessKeyID
                     }
             });
         if (!accessKey) {

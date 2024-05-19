@@ -1,14 +1,15 @@
 // src/redis/redis.service.ts
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
-import { fromEvent, map } from 'rxjs';
+import 'process'
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private client: RedisClientType;
 
   async onModuleInit() {
-    this.client = createClient({ url: 'redis://localhost:6379' });
+    const redisHost = process.env.REDIS_HOST ? process.env.REDIS_HOST : 'localhost';
+    this.client = createClient({ url: `redis://${redisHost}:6379` });
     await this.client.connect();
   }
 
@@ -40,7 +41,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.client.publish(channel, message);
   }
 
-  // Updated subscribe method to take a handler function
   async subscribe(channel: string, handler: (message: string) => void) {
     await this.client.subscribe(channel, handler);
   }

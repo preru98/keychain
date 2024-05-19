@@ -1,15 +1,21 @@
+import { Optional } from '@nestjs/common';
 import { IsDate, IsNumber, IsUUID } from 'class-validator';
 
 export class UpdateAccessKeyDTO {
-    @IsUUID()
-    readonly accessKeyID: string;
+    @IsNumber()
+    @Optional()
+    readonly requestRateLimit: number;
 
     @IsUUID()
-    readonly requesterId: string;
+    @Optional()
+    readonly owner: string;
+
+    @IsUUID()
+    @Optional()
+    readonly id: string;
 
     @IsDate()
+    @Optional()
     readonly expiresAt: Date;
 
-    @IsNumber()
-    readonly requestRateLimit: number;
 }
