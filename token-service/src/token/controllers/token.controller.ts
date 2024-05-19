@@ -10,7 +10,7 @@ export class TokenController {
     @Get('fetch-token/:accessKeyId')
     @Header('Content-Type', 'application/json')
     fetchToken(@Req() req: AuthenticatedRequest, @Param('accessKeyId') accessKeyId: string): Promise<Token[]> {
-        return this.tokenService.fetchToken(req.userData.userId, accessKeyId);
+        return this.tokenService.fetchToken(req.userData.accountId, accessKeyId);
     }
 }
 

@@ -12,10 +12,7 @@ export class LoginService {
         if (!accountId) {
             throw new BadRequestException('Account ID is required for login.');
         }
-        // If accountId is not a valid UUID, throw an error
-        if (!accountId.match(/^[0-9a-fA-F]{24}$/)) {
-            throw new BadRequestException('Account ID is not a valid UUID.');
-        }
+        
         const jwtToken = jwt.sign({ accountId }, SECRET_KEY);
 
         return {jwtToken};      

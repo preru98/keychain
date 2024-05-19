@@ -47,10 +47,7 @@ export class TokenService {
             throw new BadRequestException('Rate limit exceeded');
         }
 
-        const tokens = await this.tokenRepository.find({where: { owner: userId }}); // Change this as well once auth module returns user
-        if (!tokens.length) {
-            throw new NotFoundException('Token(s) not found');
-        }
+        const tokens = await this.tokenRepository.find(); // Change this as well once auth module returns user
         return tokens;
     }
 }

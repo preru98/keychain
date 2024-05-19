@@ -1,1 +1,1 @@
-export type AuthenticatedRequest = Request & {userData: { userId: string}};
+export type AuthenticatedRequest = Request & {userData: { accountId: string}};
