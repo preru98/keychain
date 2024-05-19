@@ -27,6 +27,52 @@ Ratelimits implemented in Redis are safe from race-conditions. Even if multiple 
 
 Rate limit checks are based on sliding window rate-limiting.
 
+# Sample Data on deployed version
+
+## Accounts
+An admin and user account are already created. 
+Admin account ID is `5928ba4d-7d11-4097-98ab-45f4ad464bc4`
+User account ID is `78d06ffd-e9a6-47ca-aa1b-612dcccf80ea`
+You can fetch all the accounts using 
+```
+curl --location 'http://13.232.73.216:3000/account/'
+```
+
+## Access Keys
+Two access keys, associated to user `78d06ffd-e9a6-47ca-aa1b-612dcccf80ea` are already created -
+
+1. `dbbf94af-ed3d-4096-b7ea-68937250e3c3` - Rate limit of 10
+2. `884cc0db-692f-4e5a-89a8-38b96b52899e` - Rate limit of 20
+
+Expiry date is 30 days by default
+
+## Testing Access Keys
+You can login to get a JWT token to use when retrieving tokens from token service
+```
+curl --location 'http://13.232.73.216:3001/login/' \
+--header 'Content-Type: application/json' \
+--data '{
+    "accountId": "78d06ffd-e9a6-47ca-aa1b-612dcccf80ea"
+}'
+```
+
+Example response - 
+```
+{
+    "jwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI3OGQwNmZmZC1lOWE2LTQ3Y2EtYWExYi02MTJkY2NjZjgwZWEiLCJpYXQiOjE3MTYxNDc2NjF9.sLl5WKnXy2Jk8b6xApxar0hVYXO9KFkmrOcFp7bSZV8"
+}
+```
+
+After this, you can test access keys rate limits. Replace the JWT token retrieved in the login request
+```
+curl --location 'http://13.232.73.216:3001/token/fetch-token/dbbf94af-ed3d-4096-b7ea-68937250e3c3/' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI3OGQwNmZmZC1lOWE2LTQ3Y2EtYWExYi02MTJkY2NjZjgwZWEiLCJpYXQiOjE3MTYxNDc2NjF9.sLl5WKnXy2Jk8b6xApxar0hVYXO9KFkmrOcFp7bSZV8'
+```
+
+For this access key, in this example, the rate limit is 10 requests per minute. So the first 10 requests will go through, after that requests will fail until the minute is over.
+
+There are more APIs to update, enable and disable access keys, they are detailed below
+
 # Setup
 
 You can start the services by running 
