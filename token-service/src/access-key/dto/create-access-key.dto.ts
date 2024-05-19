@@ -9,5 +9,6 @@ export class CreateAccessKeyDTO {
     @IsUUID()
     readonly owner: string;
 
-    // Might have to add expiry here as well, default will be 30 days
+    @IsUUID()
+    readonly accessKeyId: string;
 }

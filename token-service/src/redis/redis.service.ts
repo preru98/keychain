@@ -1,6 +1,7 @@
 // src/redis/redis.service.ts
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
+import { fromEvent, map } from 'rxjs';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
@@ -33,5 +34,18 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async expire(key: string, seconds: number) {
     await this.client.expire(key, seconds);
+  }
+
+  async publish(channel: string, message: string) {
+    await this.client.publish(channel, message);
+  }
+
+  // Updated subscribe method to take a handler function
+  async subscribe(channel: string, handler: (message: string) => void) {
+    await this.client.subscribe(channel, handler);
+  }
+
+  unsubscribe(channel: string) {
+    this.client.unsubscribe(channel);
   }
 }
