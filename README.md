@@ -1,3 +1,7 @@
+The service can be set up locally, it is also deployed on an EC2 machine - `13.232.73.216`
+The token service is running on `13.232.73.216:3001`
+The keychain service is running on `13.232.73.216:3000`
+
 # Architecture
 
 ![Diagram](https://i.imgur.com/pRDwGYq.png)
