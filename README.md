@@ -66,7 +66,7 @@ Example response -
 After this, you can test access keys rate limits. Replace the JWT token retrieved in the login request
 ```
 curl --location 'http://13.232.73.216:3001/token/fetch-token/dbbf94af-ed3d-4096-b7ea-68937250e3c3/' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOiI3OGQwNmZmZC1lOWE2LTQ3Y2EtYWExYi02MTJkY2NjZjgwZWEiLCJpYXQiOjE3MTYxNDc2NjF9.sLl5WKnXy2Jk8b6xApxar0hVYXO9KFkmrOcFp7bSZV8'
+--header 'Authorization: Bearer $JWT_TOKEN'
 ```
 
 For this access key, in this example, the rate limit is 10 requests per minute. So the first 10 requests will go through, after that requests will fail until the minute is over.
