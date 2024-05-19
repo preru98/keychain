@@ -16,7 +16,7 @@ export class TokenService {
         private readonly redisService: RedisService,
     ) {}
 
-    async fetchToken(userId: string, accessKeyId: string): Promise<Token[]>{
+    async fetchToken(userId: string, accessKeyId: string): Promise<object[]>{
         if (!userId || !accessKeyId) {
             throw new BadRequestException('Invalid request');
         }
@@ -47,7 +47,22 @@ export class TokenService {
             throw new BadRequestException('Rate limit exceeded');
         }
 
-        const tokens = await this.tokenRepository.find(); // Change this as well once auth module returns user
+        // const tokens = await this.tokenRepository.find(); // Change this as well once auth module returns user
+        const tokens = [
+            {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "expiresIn": 3600,
+                "issuedAt": "2024-05-20T14:25:43.511Z",
+                "userId": "user-123"
+            },
+            {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "expiresIn": 7200,
+                "issuedAt": "2024-05-20T14:25:43.511Z",
+                "userId": "user-456"
+            }
+        ]
+          
         return tokens;
     }
 }
