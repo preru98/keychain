@@ -1,0 +1,1 @@
+export type AuthenticatedRequest = Request & {userData: { userId: string}};
